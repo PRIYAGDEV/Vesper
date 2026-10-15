@@ -1,83 +1,81 @@
-# FreeFlow 🎙️
+# 🌊 FreeFlow
 
-> **High-performance, 100% private system-wide voice dictation for Windows 11.**  
-> An open-source, local alternative to **Wispr Flow**. Dictate anywhere—Notepad, VS Code, Google Chrome, Word, Slack, or any active window—with a single push-to-talk hotkey.
+<p align="center">
+  <strong>Ultra-fast, 100% local, system-wide voice dictation for Windows.</strong><br>
+  <em>An open-source, completely private alternative to Wispr Flow.</em>
+</p>
 
----
-
-## ✨ Features
-
-- **🎯 Global Push-to-Talk**: Hold `Ctrl+Win` (or customize to `Alt+Space`, `Ctrl+Space`, etc.) to record from your microphone; release to instantly transcribe and paste into your active window.
-- **🔒 100% Offline & Private**: Powered locally by `faster-whisper`. No cloud API keys, no subscriptions, and zero audio ever leaves your computer.
-- **⚡ NVIDIA GPU Acceleration**: Native support for NVIDIA GeForce RTX/GTX GPUs using CUDA `float16` tensor cores for sub-second transcriptions (~0.2s–0.3s), with an automatic CPU `int8` fallback.
-- **🌊 Audio-Reactive Floating Overlay**: Non-focus-stealing translucent floating pill with a dynamic waveform that bounces live to your voice amplitude, violet shimmer during transcription, and green checkmark on completion.
-- **📋 Automatic Clipboard Preservation**: Injects text at your exact cursor position via simulated `Ctrl+V` and **automatically restores your previous clipboard contents**.
-- **🧹 Smart Cleanup & Spoken Commands**:
-  - Automatically strips hesitation fillers: *"um"*, *"uh"*, *"like"*, *"you know"*.
-  - Converts spoken punctuation commands:
-    - `"new line"` / `"newline"` → `\n`
-    - `"new paragraph"` → `\n\n`
-    - `"period"` / `"full stop"` → `.`
-    - `"comma"` → `,`
-    - `"question mark"` → `?`
-    - `"exclamation mark"` → `!`
-    - `"colon"` → `:`
-    - `"semicolon"` → `;`
-- **✍️ Writing Style Modes**: Toggle between **Casual**, **Professional** (polishes business tone), **Bullet Points** (auto-formats lists), and **Developer / Code** (formats `camelCase` and `snake_case`).
-- **🎛️ Modern Settings & History**: Access system preferences and a 20-item transcription history with one-click copy buttons from the Windows System Tray.
+<p align="center">
+  <a href="#features"><img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%2010-0078D6?logo=windows&logoColor=white" alt="Platform"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white" alt="Python"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://github.com/SYSTRAN/faster-whisper"><img src="https://img.shields.io/badge/Engine-faster--whisper-blueviolet" alt="Engine"></a>
+  <a href="#nvidia-gpu-acceleration"><img src="https://img.shields.io/badge/Acceleration-NVIDIA%20CUDA%2012-76B900?logo=nvidia&logoColor=white" alt="CUDA"></a>
+  <img src="https://img.shields.io/badge/Privacy-100%25%20Local%20%26%20Offline-success" alt="100% Local">
+</p>
 
 ---
 
-## 📁 Repository Structure
+## 💡 What is FreeFlow?
 
-```text
-freeflow/
-├── config.json               # Default user configuration
-├── download_small.py         # Script to download offline Whisper model
-├── main.py                   # Application launch script
-├── requirements.txt          # Python dependencies
-├── build_exe.py              # Standalone PyInstaller builder
-├── run_console.bat           # Launcher with visible terminal logs
-├── start.bat                 # Background tray launcher
-├── src/
-│   ├── app.py                # Main application coordinator
-│   ├── audio.py              # Audio recorder (16kHz mono, Silero VAD)
-│   ├── cleanup.py            # Text post-processing, fillers & spoken commands
-│   ├── config.py             # Configuration manager
-│   ├── hotkey.py             # Low-level Windows async key state listener
-│   ├── injector.py           # Win32 clipboard text injector & keybd_event
-│   ├── transcriber.py        # Faster-Whisper engine (CUDA/CPU fallback)
-│   └── ui/
-│       ├── history.py        # Transcription history dialog
-│       ├── overlay.py        # Floating translucent status pill
-│       ├── settings.py       # Preferences & live microphone meter
-│       └── tray.py           # Windows system tray icon & menu
-└── tests/
-    ├── hello_world.wav       # Automated test audio sample
-    ├── test_audio.py         # Audio capture & WAV validation test
-    ├── test_cleanup.py       # Filler removal & spoken commands test
-    ├── test_full_pipeline.py # End-to-end integration test
-    ├── test_hotkey.py        # Hotkey parser and state triggers test
-    └── test_injector.py      # Clipboard preservation & injection test
-```
+**FreeFlow** gives you instant, AI-powered voice typing in **any application on Windows**—VS Code, Discord, Notepad, Google Chrome, Slack, Obsidian, Microsoft Office, or Windows Terminal.
+
+Press and hold your hotkey (`Ctrl + Win`), speak naturally, and release. FreeFlow transcribes your speech in real time using local Whisper models, cleans up hesitation filler words, processes spoken formatting commands, and pastes the result directly at your active text cursor while preserving your original clipboard contents.
+
+- **Zero Cloud Latency & Zero Subscriptions**: 100% offline. No API keys, no subscription paywalls, and zero bytes of audio ever leave your computer.
+- **Hardware-Accelerated Speed**: Sub-second transcription with NVIDIA CUDA tensor cores (`float16`), with seamless automatic fallback to CPU (`int8`).
+
+---
+
+## ✨ Key Features
+
+- 🎙️ **Global Push-to-Talk**: Hold `Ctrl + Win` (or configure your own custom hotkey like `Alt + Space`) anywhere in Windows to record; release to instantly inject text.
+- 💻 **Audio-Reactive Floating Pill**: Translucent, non-intrusive floating overlay with a live bouncing waveform synchronized to your voice amplitude, shimmer animation during transcription, and status confirmation.
+- 🧹 **Intelligent Filler Removal**: Automatically strips hesitation words (*"um"*, *"uh"*, *"like"*, *"you know"*) without losing sentence context.
+- 📝 **Spoken Formatting Commands**: Speak punctuation and formatting naturally (*"new line"*, *"comma"*, *"period"*, *"question mark"*, *"colon"*).
+- 🎨 **Multiple Tone & Writing Styles**:
+  - **Casual**: Natural, expressive everyday text.
+  - **Professional**: Clean, corporate-ready communication.
+  - **Bullet Points**: Formats transcribed speech directly into structured `- ` Markdown lists.
+  - **Developer / Code**: Automatically parses and converts identifier names to `camelCase` or `snake_case`.
+- 📋 **Non-Destructive Clipboard Preservation**: FreeFlow uses simulated paste for instant typing into any app, but seamlessly backs up and restores whatever was already in your clipboard.
+- ⏱️ **Transcription History & Tray Menu**: Quickly access previous transcriptions with one-click copy from the Windows system tray.
+- 🤖 **Hallucination Prevention**: Integrated Silero Voice Activity Detection (VAD) and repetition penalty filters eliminate Whisper chant loops and phantom text.
+
+---
+
+## 🗣️ Spoken Commands Reference
+
+FreeFlow listens for natural formatting phrases and replaces them inline:
+
+| Spoken Phrase | Output | Example Spoken | Resulting Text |
+| :--- | :--- | :--- | :--- |
+| `"new line"` / `"newline"` | `\n` | *"Hello new line world"* | Hello<br>world |
+| `"new paragraph"` | `\n\n` | *"Intro new paragraph Details"* | Intro<br><br>Details |
+| `"period"` / `"full stop"` | `.` | *"Ready to go period"* | Ready to go. |
+| `"comma"` | `,` | *"First comma second"* | First, second |
+| `"question mark"` | `?` | *"Are you sure question mark"* | Are you sure? |
+| `"exclamation mark"` | `!` | *"Look out exclamation mark"* | Look out! |
+| `"colon"` | `:` | *"Note colon update"* | Note: update |
+| `"semicolon"` | `;` | *"Part one semicolon part two"* | Part one; part two |
 
 ---
 
 ## 🚀 Quick Start
 
 ### 1. Prerequisites
-- Windows 10 or 11 (64-bit)
-- Python 3.10, 3.11, or 3.12
+- **Windows 10 / 11** (64-bit)
+- **Python 3.10, 3.11, or 3.12**
 - A working microphone
 
-### 2. Clone & Setup Environment
+### 2. Clone & Setup
 
 ```powershell
 # Clone the repository
-git clone https://github.com/your-username/freeflow.git
-cd freeflow
+git clone https://github.com/PRIYAGDEV/FreeFlow.git
+cd FreeFlow
 
-# Create and activate a virtual environment
+# Create and activate virtual environment
 python -m venv .venv
 .\.venv\Scripts\activate
 
@@ -85,56 +83,91 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 3. Download the Local Whisper Model
-Run the helper script to download the high-accuracy multilingual `small` model (~480 MB) into the `models/` directory for 100% offline use:
+### 3. Download the Offline Model
+Run the setup script to download the high-accuracy multilingual `small` model (~480 MB) into `models/`:
 
 ```powershell
 python download_small.py
 ```
 
-### 4. Run FreeFlow
+### 4. Launch FreeFlow
 ```powershell
-# With console logs:
+# Run with live console logging:
 python main.py
 # or double-click run_console.bat
 
-# Silent background mode:
+# Or run silently in the background:
 # double-click start.bat
 ```
 
-- FreeFlow docks into your **Windows System Tray** (near the clock on the bottom-right).
-- Click into any text window (VS Code, Notepad, Browser, Discord, Word).
-- **Hold `Ctrl+Win`**, speak into your mic, and **release**.
+1. Look for the microphone icon in your **Windows System Tray** (bottom-right taskbar).
+2. Click into any text field (VS Code, browser, Word, Discord).
+3. **Hold `Ctrl + Win`**, speak your message, and **release**.
 
 ---
 
-## ⚡ Enabling NVIDIA GPU Acceleration (Optional)
+## ⚡ NVIDIA GPU Acceleration (Recommended)
 
-If your PC has a dedicated NVIDIA GPU (RTX / GTX):
+FreeFlow runs out-of-the-box on CPU using quantized `int8` inference. If you have an NVIDIA GeForce RTX or GTX GPU, you can enable sub-second tensor core inference:
 
 ```powershell
 pip install nvidia-cublas-cu12 nvidia-cudnn-cu12
 ```
 
-FreeFlow will automatically detect CUDA and activate **`float16`** tensor core inference for near-instantaneous transcription speeds.
+FreeFlow will automatically detect the CUDA runtime and switch compute to **`float16`** on your GPU.
 
 ---
 
-## 📦 Building Standalone `.exe`
+## 📦 Building a Standalone Executable (`.exe`)
 
-To package FreeFlow into a single portable Windows executable:
+You can compile FreeFlow into a portable Windows application that runs without requiring Python to be installed:
 
 ```powershell
 python build_exe.py
 ```
 
-The compiled standalone executable and a desktop shortcut will be generated at `dist/FreeFlow.exe`.
+The compiled binary will be placed at `dist/FreeFlow.exe`, and a desktop shortcut will automatically be created.
+
+---
+
+## 📁 Project Structure
+
+```text
+FreeFlow/
+├── config.json               # User preferences & hotkey configuration
+├── main.py                   # Application entry point
+├── build_exe.py              # PyInstaller executable builder
+├── download_small.py         # Offline model downloader
+├── requirements.txt          # Python package dependencies
+├── run_console.bat           # Quick launcher with debug terminal
+├── start.bat                 # Silent background tray launcher
+├── src/
+│   ├── app.py                # Main application coordinator
+│   ├── audio.py              # Audio recorder (16kHz mono, Silero VAD)
+│   ├── cleanup.py            # Text post-processing, fillers & punctuation
+│   ├── config.py             # Configuration manager
+│   ├── hotkey.py             # Low-level Windows async key state listener
+│   ├── injector.py           # Win32 clipboard text injector & key events
+│   ├── transcriber.py        # Faster-Whisper engine (CUDA / CPU auto-detect)
+│   └── ui/
+│       ├── history.py        # Transcription history window
+│       ├── overlay.py        # Audio-reactive floating status pill
+│       ├── settings.py       # Configuration GUI & live mic meter
+│       └── tray.py           # System tray icon & context menus
+└── tests/
+    ├── hello_world.wav       # Automated audio test fixture
+    ├── test_audio.py         # Audio capture & WAV validation test
+    ├── test_cleanup.py       # Filler removal & spoken command test
+    ├── test_full_pipeline.py # End-to-end integration test
+    ├── test_hotkey.py        # Hotkey trigger & release test
+    └── test_injector.py      # Clipboard preservation & injection test
+```
 
 ---
 
 ## 🧪 Running Tests
 
-Verify the entire pipeline locally:
+Run the comprehensive test suite to verify all subsystem components:
 
 ```powershell
 python tests/test_hotkey.py
