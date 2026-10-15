@@ -1,0 +1,13 @@
+{
+    "hotkey": "ctrl+win",
+    "model_size": "small",
+    "device_index": null,
+    "language": "en",
+    "task": "transcribe",
+    "cleanup_filler": true,
+    "spoken_commands": true,
+    "vad_filter": true,
+    "history_limit": 20,
+    "style": "casual",
+    "audio_feedback": true
+}

@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# C extensions
+*.so
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Large Models & Weights (>100MB rejected by GitHub)
+models/
+*.bin
+*.onnx
+*.pt
+*.pth
+
+# PyInstaller Build & Distribution artifacts
+build/
+dist/
+*.exe
+*.manifest
+*.spec
+
+# User Runtime Data & History (Private / ephemeral)
+history.json
+*.log
+freeflow.log
+output_test.wav
+test_recording.wav
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Windows shortcuts & system files
+*.lnk
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
