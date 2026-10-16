@@ -187,6 +187,23 @@ class SettingsDialog(QDialog):
         d_form.setSpacing(10)
         d_form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
 
+        # Dictation Mode / Language
+        self.mode_combo = QComboBox()
+        self.mode_combo.addItem("Hindi to English (Speak Hindi -> Types English)", "hi_to_en")
+        self.mode_combo.addItem("English Dictation (Speak English -> Types English)", "en_direct")
+        self.mode_combo.addItem("Auto-Detect Language -> Types English", "auto_to_en")
+        curr_task = self.config.get("task", "translate")
+        curr_lang = self.config.get("language", "hi")
+        if curr_task == "translate" and curr_lang == "hi":
+            self.mode_combo.setCurrentIndex(0)
+        elif curr_task == "transcribe" and curr_lang == "en":
+            self.mode_combo.setCurrentIndex(1)
+        elif curr_task == "translate" and curr_lang in ("auto", None):
+            self.mode_combo.setCurrentIndex(2)
+        else:
+            self.mode_combo.setCurrentIndex(0)
+        d_form.addRow("Dictation Mode:", self.mode_combo)
+
         # Push-to-Talk Hotkey
         self.hotkey_input = QLineEdit(self.config.get("hotkey", "ctrl+win"))
         self.hotkey_input.setPlaceholderText("e.g. ctrl+win, ctrl+space, alt+space")
