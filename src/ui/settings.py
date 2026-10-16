@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-FreeFlow - Settings & Preferences Dialog
+Vesper - Settings & Preferences Dialog
 Crafted with UI/UX Pro Max design intelligence:
 - Deep obsidian card-based container layout (#0B0D14 / #131622)
 - High-contrast typography hierarchy with Segoe UI Variable / Inter
@@ -135,11 +135,11 @@ QPushButton#cancelBtn:hover {
 
 
 class SettingsDialog(QDialog):
-    """Ultra-modern, card-based preference panel for FreeFlow."""
+    """Ultra-modern, card-based preference panel for Vesper."""
 
     def __init__(self, parent=None, on_saved: Optional[Callable[[dict], None]] = None):
         super().__init__(parent)
-        self.setWindowTitle("FreeFlow - Preferences")
+        self.setWindowTitle("Vesper - Preferences")
         self.setFixedSize(540, 580)
         self.setStyleSheet(SETTINGS_STYLESHEET)
         self.on_saved = on_saved
@@ -155,7 +155,7 @@ class SettingsDialog(QDialog):
 
         # Header Title
         title_box = QHBoxLayout()
-        title = QLabel("FreeFlow Preferences")
+        title = QLabel("Vesper Preferences")
         title.setFont(QFont("Segoe UI Variable Display", 16, QFont.Weight.Bold))
         title.setStyleSheet("color: #F8FAFC;")
         title_box.addWidget(title)

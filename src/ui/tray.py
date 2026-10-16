@@ -63,7 +63,7 @@ class WisprTrayIcon(QSystemTrayIcon):
         self.on_quit = on_quit
 
         self.setIcon(create_tray_icon(is_recording=False))
-        self.setToolTip(f"FreeFlow - Hold [{self.hotkey_str.upper()}] to dictate")
+        self.setToolTip(f"Vesper - Hold [{self.hotkey_str.upper()}] to dictate")
 
         self._init_menu()
         self.activated.connect(self._on_activated)
@@ -96,7 +96,7 @@ class WisprTrayIcon(QSystemTrayIcon):
         """)
 
         # Title action
-        title_act = QAction("FreeFlow", menu)
+        title_act = QAction("Vesper", menu)
         title_act.setEnabled(False)
         menu.addAction(title_act)
 

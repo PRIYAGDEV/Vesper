@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-FreeFlow - Transcription History Dialog
+Vesper - Transcription History Dialog
 Crafted with UI/UX Pro Max design intelligence:
 - Real-time instant search & filtering bar
 - Deep obsidian cards (#131622) with micro-elevation on hover
@@ -219,7 +219,7 @@ class HistoryDialog(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("FreeFlow - Transcription History")
+        self.setWindowTitle("Vesper - Transcription History")
         self.setFixedSize(580, 560)
         self.setStyleSheet(HISTORY_STYLESHEET)
         self._all_history: List[dict] = []

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-FreeFlow - Floating Audio-Reactive Status Pill Overlay
+Vesper - Floating Audio-Reactive Status Pill Overlay
 Crafted with UI/UX Pro Max design intelligence:
 - Ultra-premium frosted obsidian glassmorphism with specular rim lighting
 - Liquid spring-physics audio reactive waveform (9 harmonic bars)

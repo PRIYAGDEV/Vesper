@@ -1,4 +1,4 @@
-"""Build script to compile FreeFlow into a standalone Windows .exe using PyInstaller and place a Desktop shortcut."""
+"""Build script to compile Vesper into a standalone Windows .exe using PyInstaller and place a Desktop shortcut."""
 
 import os
 import subprocess
@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 def create_desktop_shortcut(target_exe: Path):
-    """Create a Windows desktop shortcut pointing to FreeFlow.exe."""
+    """Create a Windows desktop shortcut pointing to Vesper.exe."""
     try:
         desktop_dir = Path(os.environ["USERPROFILE"]) / "Desktop"
         if not desktop_dir.exists():
@@ -17,14 +17,14 @@ def create_desktop_shortcut(target_exe: Path):
         old_shortcut = desktop_dir / "Wispr Flow.lnk"
         old_shortcut.unlink(missing_ok=True)
 
-        shortcut_path = desktop_dir / "FreeFlow.lnk"
+        shortcut_path = desktop_dir / "Vesper.lnk"
         vbs_script = f"""
 Set oWS = WScript.CreateObject("WScript.Shell")
 sLinkFile = "{str(shortcut_path)}"
 Set oLink = oWS.CreateShortcut(sLinkFile)
 oLink.TargetPath = "{str(target_exe)}"
 oLink.WorkingDirectory = "{str(target_exe.parent)}"
-oLink.Description = "FreeFlow - System-Wide Voice Dictation"
+oLink.Description = "Vesper - System-Wide Voice Dictation"
 oLink.Save
 """
         vbs_file = Path("create_shortcut.vbs")
@@ -38,12 +38,12 @@ oLink.Save
 
 def build():
     print("=" * 60)
-    print(" Building FreeFlow Standalone Executable (.exe)")
+    print(" Building Vesper Standalone Executable (.exe)")
     print("=" * 60)
 
     cmd = [
         sys.executable, "-m", "PyInstaller",
-        "--name=FreeFlow",
+        "--name=Vesper",
         "--noconsole",
         "--onefile",
         "--clean",
@@ -72,12 +72,12 @@ def build():
         "main.py"
     ]
 
-    print(f"Running PyInstaller for FreeFlow...")
+    print(f"Running PyInstaller for Vesper...")
     subprocess.check_call(cmd)
 
-    dist_exe = Path("dist/FreeFlow.exe").resolve()
+    dist_exe = Path("dist/Vesper.exe").resolve()
     if dist_exe.exists():
-        print(f"\n[SUCCESS] Standalone FreeFlow.exe compiled successfully at:\n  {dist_exe}")
+        print(f"\n[SUCCESS] Standalone Vesper.exe compiled successfully at:\n  {dist_exe}")
         create_desktop_shortcut(dist_exe)
     else:
         print("[ERROR] Build failed: Executable not found in dist/")

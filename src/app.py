@@ -87,7 +87,7 @@ class WisprFlowApp:
         threading.Thread(target=self._warmup_model, daemon=True, name="ModelWarmup").start()
 
         self.tray.showMessage(
-            "FreeFlow",
+            "Vesper",
             f"Ready! Hold [{self.config.get('hotkey', 'ctrl+win').upper()}] anywhere to dictate.",
             self.tray.icon(),
             3000
@@ -236,8 +236,8 @@ class WisprFlowApp:
 
 def get_log_file() -> Path:
     if getattr(sys, "frozen", False):
-        return Path(sys.executable).parent / "freeflow.log"
-    return Path(__file__).resolve().parent.parent / "freeflow.log"
+        return Path(sys.executable).parent / "vesper.log"
+    return Path(__file__).resolve().parent.parent / "vesper.log"
 
 
 def main():
