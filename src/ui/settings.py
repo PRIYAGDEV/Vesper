@@ -135,24 +135,11 @@ class SettingsDialog(QDialog):
         form.setSpacing(12)
         form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
 
-        # 1. Dictation Mode
+        # 1. Dictation Mode / Language (English only)
         self.mode_combo = QComboBox()
-        self.mode_combo.addItem("Hindi to English (Speak Hindi -> Types English)", "hi_to_en")
-        self.mode_combo.addItem("English Dictation (Speak English -> Types English)", "en_direct")
-        self.mode_combo.addItem("Auto-Detect Language -> Translate to English", "auto_to_en")
-        self.mode_combo.addItem("Hindi Dictation (Types Devanagari script)", "hi_direct")
-
-        curr_task = self.config.get("task", "transcribe")
-        curr_lang = self.config.get("language", "en")
-        if curr_task == "translate" and curr_lang == "hi":
-            self.mode_combo.setCurrentIndex(0)
-        elif curr_task == "transcribe" and curr_lang == "en":
-            self.mode_combo.setCurrentIndex(1)
-        elif curr_task == "translate" and curr_lang in ("auto", None):
-            self.mode_combo.setCurrentIndex(2)
-        elif curr_task == "transcribe" and curr_lang == "hi":
-            self.mode_combo.setCurrentIndex(3)
-        form.addRow("Dictation Mode:", self.mode_combo)
+        self.mode_combo.addItem("English (Speak English -> Types English)", "en_direct")
+        self.mode_combo.setCurrentIndex(0)
+        form.addRow("Language:", self.mode_combo)
 
         # 2. Writing Style (Signature Wispr Flow feature)
         self.style_combo = QComboBox()
@@ -288,23 +275,9 @@ class SettingsDialog(QDialog):
         new_model = self.model_combo.currentData()
         new_style = self.style_combo.currentData()
         new_device = self.device_combo.currentData()
-        mode_val = self.mode_combo.currentData()
-
-        if mode_val == "hi_to_en":
-            new_lang = "hi"
-            new_task = "translate"
-        elif mode_val == "en_direct":
-            new_lang = "en"
-            new_task = "transcribe"
-        elif mode_val == "auto_to_en":
-            new_lang = "auto"
-            new_task = "translate"
-        elif mode_val == "hi_direct":
-            new_lang = "hi"
-            new_task = "transcribe"
-        else:
-            new_lang = "hi"
-            new_task = "translate"
+        # Enforce English-to-English dictation
+        new_lang = "en"
+        new_task = "transcribe"
 
         self.config["hotkey"] = new_hotkey
         self.config["model_size"] = new_model

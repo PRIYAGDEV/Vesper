@@ -151,8 +151,8 @@ class WisprFlowApp:
                 # 1. Local Whisper Transcription / Translation
                 raw_text = self.transcriber.transcribe(
                     audio_data,
-                    language=self.config.get("language", "hi"),
-                    task=self.config.get("task", "translate"),
+                    language=self.config.get("language", "en"),
+                    task=self.config.get("task", "transcribe"),
                     vad_filter=self.config.get("vad_filter", True)
                 )
 

@@ -200,12 +200,8 @@ class WhisperTranscriber:
             speech_pad_ms=250
         ) if vad_filter else None
 
-        if language == "hi" and task != "translate":
-            prompt = "नमस्ते, यह एक स्पष्ट आवाज श्रुतलेख है।"
-        elif language == "hi" and task == "translate":
-            prompt = "Translate Hindi speech into fluent, natural English with proper punctuation."
-        else:
-            prompt = "Clear, articulate voice dictation with proper capitalization and punctuation."
+        # Optimized English dictation prompt for high accuracy
+        prompt = "Clear, articulate voice dictation with proper capitalization and punctuation."
 
         with self._lock:
             try:
