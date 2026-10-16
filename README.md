@@ -6,6 +6,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/PRIYAGDEV/FreeFlow/releases/latest"><img src="https://img.shields.io/github/v/release/PRIYAGDEV/FreeFlow?label=Download%20FreeFlow.exe&style=for-the-badge&logo=windows&color=0078D6" alt="Download Standalone"></a>
+</p>
+
+<p align="center">
   <a href="#features"><img src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%2010-0078D6?logo=windows&logoColor=white" alt="Platform"></a>
   <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?logo=python&logoColor=white" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
@@ -63,12 +67,23 @@ FreeFlow listens for natural formatting phrases and replaces them inline:
 
 ## 🚀 Quick Start
 
-### 1. Prerequisites
+### ⚡ Option A: Standalone Executable (Recommended)
+No Python installation or terminal setup required:
+1. Download **[FreeFlow.exe](https://github.com/PRIYAGDEV/FreeFlow/releases/latest)** (~354 MB).
+2. Double-click `FreeFlow.exe` — it will dock into your **Windows System Tray** (near the taskbar clock).
+3. Focus any text window (VS Code, Chrome, Word, Discord, Terminal).
+4. **Hold `Ctrl + Win`**, speak your message, and **release**!
+
+---
+
+### 🐍 Option B: Run from Source
+
+#### 1. Prerequisites
 - **Windows 10 / 11** (64-bit)
 - **Python 3.10, 3.11, or 3.12**
 - A working microphone
 
-### 2. Clone & Setup
+#### 2. Clone & Setup
 
 ```powershell
 # Clone the repository
@@ -83,14 +98,14 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 3. Download the Offline Model
+#### 3. Download the Offline Model
 Run the setup script to download the high-accuracy multilingual `small` model (~480 MB) into `models/`:
 
 ```powershell
 python download_small.py
 ```
 
-### 4. Launch FreeFlow
+#### 4. Launch FreeFlow
 ```powershell
 # Run with live console logging:
 python main.py
@@ -99,10 +114,6 @@ python main.py
 # Or run silently in the background:
 # double-click start.bat
 ```
-
-1. Look for the microphone icon in your **Windows System Tray** (bottom-right taskbar).
-2. Click into any text field (VS Code, browser, Word, Discord).
-3. **Hold `Ctrl + Win`**, speak your message, and **release**.
 
 ---
 
