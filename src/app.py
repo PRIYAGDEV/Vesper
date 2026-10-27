@@ -41,6 +41,10 @@ class WisprFlowApp:
 
         # UI Components
         self.overlay = FloatingOverlay()
+        self.overlay.set_mode_badge(
+            language=self.config.get("language", "hi"),
+            task=self.config.get("task", "translate"),
+        )
 
         # Audio recorder
         self.recorder = AudioRecorder(
@@ -248,6 +252,10 @@ class WisprFlowApp:
         self.hotkey_listener.set_hotkey(new_hotkey)
         self.tray.update_hotkey(new_hotkey)
         self.recorder.device_index = new_config.get("device_index")
+        self.overlay.set_mode_badge(
+            language=new_config.get("language", "hi"),
+            task=new_config.get("task", "translate"),
+        )
 
         new_model = new_config.get("model_size", "small")
         if new_model != self.transcriber.model_size:
