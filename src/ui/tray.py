@@ -133,7 +133,7 @@ class WisprTrayIcon(QSystemTrayIcon):
     def update_hotkey(self, new_hotkey: str):
         self.hotkey_str = new_hotkey
         self.hotkey_act.setText(f"Hotkey: {new_hotkey.upper()}")
-        self.setToolTip(f"Wispr Flow Clone - Hold [{new_hotkey.upper()}] to dictate")
+        self.setToolTip(f"Vesper - Hold [{new_hotkey.upper()}] to dictate")
 
     def set_recording_state(self, is_recording: bool):
         self.setIcon(create_tray_icon(is_recording=is_recording))

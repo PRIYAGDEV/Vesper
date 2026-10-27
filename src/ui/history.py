@@ -10,7 +10,9 @@ Crafted with UI/UX Pro Max design intelligence:
 
 import json
 import logging
+import os
 import sys
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import List
@@ -30,16 +32,21 @@ from PySide6.QtWidgets import (
 )
 
 import pyperclip
+from src.config import get_app_data_dir
 
 logger = logging.getLogger("WisprClone.History")
+_history_lock = threading.Lock()
 
 
 def get_history_path() -> Path:
     if getattr(sys, "frozen", False):
-        return Path(sys.executable).parent / "history.json"
-    if Path("history.json").exists():
+        exe_path = Path(sys.executable).resolve().parent / "history.json"
+        if exe_path.exists() and os.access(exe_path.parent, os.W_OK):
+            return exe_path
+        return get_app_data_dir() / "history.json"
+    if Path("history.json").exists() and os.access(Path("."), os.W_OK):
         return Path("history.json")
-    return Path(__file__).resolve().parent.parent.parent / "history.json"
+    return get_app_data_dir() / "history.json"
 
 
 HISTORY_FILE = get_history_path()
@@ -124,21 +131,27 @@ QPushButton#copyBtn:hover {
 
 
 def load_history() -> List[dict]:
-    if HISTORY_FILE.exists():
-        try:
-            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception as e:
-            logger.error(f"Error loading history: {e}")
-    return []
+    with _history_lock:
+        if HISTORY_FILE.exists():
+            try:
+                with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return data if isinstance(data, list) else []
+            except Exception as e:
+                logger.error(f"Error loading history: {e}")
+        return []
 
 
 def save_history(history: List[dict]) -> None:
-    try:
-        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-            json.dump(history, f, indent=2)
-    except Exception as e:
-        logger.error(f"Error saving history: {e}")
+    with _history_lock:
+        try:
+            HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+            tmp_path = HISTORY_FILE.with_suffix(".json.tmp")
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(history, f, indent=2)
+            tmp_path.replace(HISTORY_FILE)
+        except Exception as e:
+            logger.error(f"Error saving history: {e}")
 
 
 def add_history_entry(text: str, limit: int = 20) -> None:
@@ -147,7 +160,7 @@ def add_history_entry(text: str, limit: int = 20) -> None:
     history = load_history()
     entry = {
         "timestamp": datetime.now().strftime("%b %d, %I:%M %p"),
-        "text": text
+        "text": text,
     }
     history.insert(0, entry)
     history = history[:limit]
@@ -203,7 +216,10 @@ class HistoryCard(QFrame):
         layout.addWidget(self.copy_btn, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
 
     def _copy_text(self):
-        pyperclip.copy(self.entry.get("text", ""))
+        try:
+            pyperclip.copy(self.entry.get("text", ""))
+        except Exception as e:
+            logger.debug(f"Copy to clipboard failed: {e}")
         self.copy_btn.setText("Copied!")
         self.copy_btn.setStyleSheet("background-color: #10B981; color: white; border: 1px solid #10B981;")
         # Reset text back after 1.4 seconds

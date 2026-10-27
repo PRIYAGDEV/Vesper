@@ -11,7 +11,7 @@ Crafted with UI/UX Pro Max design intelligence:
 import logging
 from typing import Callable, Optional
 
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -137,6 +137,8 @@ QPushButton#cancelBtn:hover {
 class SettingsDialog(QDialog):
     """Ultra-modern, card-based preference panel for Vesper."""
 
+    sig_mic_level = Signal(int)
+
     def __init__(self, parent=None, on_saved: Optional[Callable[[dict], None]] = None):
         super().__init__(parent)
         self.setWindowTitle("Vesper - Preferences")
@@ -145,7 +147,8 @@ class SettingsDialog(QDialog):
         self.on_saved = on_saved
 
         self.config = load_config()
-        self._mic_monitor = None
+        self._mic_monitor: Optional[AudioRecorder] = None
+        self.sig_mic_level.connect(self._update_meter_bar)
         self._init_ui()
 
     def _init_ui(self):
@@ -192,6 +195,7 @@ class SettingsDialog(QDialog):
         self.mode_combo.addItem("Hindi to English (Speak Hindi -> Types English)", "hi_to_en")
         self.mode_combo.addItem("English Dictation (Speak English -> Types English)", "en_direct")
         self.mode_combo.addItem("Auto-Detect Language -> Types English", "auto_to_en")
+        self.mode_combo.addItem("Hindi Dictation (Types Devanagari script)", "hi_direct")
         curr_task = self.config.get("task", "translate")
         curr_lang = self.config.get("language", "hi")
         if curr_task == "translate" and curr_lang == "hi":
@@ -200,6 +204,8 @@ class SettingsDialog(QDialog):
             self.mode_combo.setCurrentIndex(1)
         elif curr_task == "translate" and curr_lang in ("auto", None):
             self.mode_combo.setCurrentIndex(2)
+        elif curr_task == "transcribe" and curr_lang == "hi":
+            self.mode_combo.setCurrentIndex(3)
         else:
             self.mode_combo.setCurrentIndex(0)
         d_form.addRow("Dictation Mode:", self.mode_combo)
@@ -265,7 +271,8 @@ class SettingsDialog(QDialog):
             name = dev["name"]
             if len(name) > 38:
                 name = name[:36] + "..."
-            self.device_combo.addItem(f"{name} (ch={dev['channels']})", dev["index"])
+            ch = dev.get("channels", dev.get("max_input_channels", 1))
+            self.device_combo.addItem(f"{name} (ch={ch})", dev["index"])
             if dev["index"] == curr_dev:
                 dev_selected_idx = i
         self.device_combo.setCurrentIndex(dev_selected_idx)
@@ -331,8 +338,18 @@ class SettingsDialog(QDialog):
 
         main_layout.addLayout(btn_layout)
 
-        # Start live VU meter
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.config = load_config()
         self._start_mic_monitor()
+
+    def closeEvent(self, event):
+        self._stop_mic_monitor()
+        super().closeEvent(event)
+
+    def hideEvent(self, event):
+        self._stop_mic_monitor()
+        super().hideEvent(event)
 
     def _start_mic_monitor(self):
         self._stop_mic_monitor()
@@ -340,27 +357,34 @@ class SettingsDialog(QDialog):
         try:
             self._mic_monitor = AudioRecorder(
                 device_index=dev_idx,
-                level_callback=self._on_mic_level
+                level_callback=self._on_mic_level,
             )
-            self._mic_monitor.start_recording()
+            self._mic_monitor.start()
         except Exception as e:
             logger.warning(f"Could not start mic meter: {e}")
 
     def _stop_mic_monitor(self):
         if self._mic_monitor:
             try:
-                self._mic_monitor.stop_recording()
+                self._mic_monitor.stop()
             except Exception:
                 pass
             self._mic_monitor = None
+        if hasattr(self, "meter_bar"):
+            self.meter_bar.setValue(0)
 
     def _restart_mic_monitor(self):
-        self._start_mic_monitor()
+        if self.isVisible():
+            self._start_mic_monitor()
 
     def _on_mic_level(self, level: float):
-        # Scale logarithmically for responsive dB-like deflection
-        val = int(min(100, (level ** 0.5) * 220))
-        self.meter_bar.setValue(val)
+        # Scale logarithmically for responsive dB-like deflection; emit via thread-safe signal
+        val = int(min(100, (max(0.0, level) ** 0.5) * 220))
+        self.sig_mic_level.emit(val)
+
+    def _update_meter_bar(self, val: int):
+        if hasattr(self, "meter_bar"):
+            self.meter_bar.setValue(val)
 
     def done(self, r):
         self._stop_mic_monitor()
@@ -371,8 +395,23 @@ class SettingsDialog(QDialog):
         new_model = self.model_combo.currentData()
         new_style = self.style_combo.currentData()
         new_device = self.device_combo.currentData()
-        new_lang = "en"
-        new_task = "transcribe"
+        mode_val = self.mode_combo.currentData()
+
+        if mode_val == "hi_to_en":
+            new_lang = "hi"
+            new_task = "translate"
+        elif mode_val == "en_direct":
+            new_lang = "en"
+            new_task = "transcribe"
+        elif mode_val == "auto_to_en":
+            new_lang = "auto"
+            new_task = "translate"
+        elif mode_val == "hi_direct":
+            new_lang = "hi"
+            new_task = "transcribe"
+        else:
+            new_lang = "hi"
+            new_task = "translate"
 
         self.config["hotkey"] = new_hotkey
         self.config["model_size"] = new_model

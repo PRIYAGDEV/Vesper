@@ -74,9 +74,9 @@ class FloatingOverlay(QWidget):
             return
         screen = QGuiApplication.primaryScreen()
         if screen:
-            geom = screen.geometry()
-            x = (geom.width() - self.width()) // 2
-            y = geom.height() - self.height() - 80
+            geom = screen.availableGeometry()
+            x = geom.x() + (geom.width() - self.width()) // 2
+            y = geom.y() + geom.height() - self.height() - 40
             self.move(x, y)
 
     def set_audio_level(self, level: float):
@@ -100,7 +100,7 @@ class FloatingOverlay(QWidget):
 
     def show_recording(self):
         self._hide_timer.stop()
-        self._watchdog_timer.start(45000)  # 45s safety limit
+        self._watchdog_timer.start(60000)  # 60s safety limit
         self.state = "recording"
         self.status_text = ""
         self._target_volume = 0.0
@@ -115,7 +115,7 @@ class FloatingOverlay(QWidget):
 
     def show_transcribing(self):
         self._hide_timer.stop()
-        self._watchdog_timer.start(12000)  # 12s safety limit
+        self._watchdog_timer.start(30000)  # 30s safety limit (allows model download/load on first run)
         self.state = "transcribing"
         self.status_text = ""
         self.setFixedSize(164, 46)
