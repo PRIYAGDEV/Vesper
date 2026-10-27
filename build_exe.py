@@ -1,5 +1,6 @@
 """Build script to compile Vesper into a standalone Windows .exe using PyInstaller and place a Desktop shortcut."""
 
+import hashlib
 import os
 import subprocess
 import sys
@@ -8,8 +9,13 @@ from pathlib import Path
 
 def create_desktop_shortcut(target_exe: Path):
     """Create a Windows desktop shortcut pointing to Vesper.exe."""
+    if sys.platform != "win32" or os.environ.get("GITHUB_ACTIONS") == "true":
+        return
     try:
-        desktop_dir = Path(os.environ["USERPROFILE"]) / "Desktop"
+        user_profile = os.environ.get("USERPROFILE")
+        if not user_profile:
+            return
+        desktop_dir = Path(user_profile) / "Desktop"
         if not desktop_dir.exists():
             return
 
@@ -36,10 +42,27 @@ oLink.Save
         print(f"[WARNING] Could not create desktop shortcut automatically: {e}")
 
 
+def update_checksum(target_exe: Path):
+    """Calculate SHA-256 hash of Vesper.exe and write to checksums.txt."""
+    try:
+        sha256 = hashlib.sha256()
+        with open(target_exe, "rb") as f:
+            for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                sha256.update(chunk)
+        digest = sha256.hexdigest().upper()
+        checksum_line = f"{digest} *{target_exe.name}\n"
+        Path("checksums.txt").write_text(checksum_line, encoding="utf-8")
+        print(f"[SUCCESS] SHA-256 checksum updated in checksums.txt:\n  {checksum_line.strip()}")
+    except Exception as e:
+        print(f"[WARNING] Could not update checksums.txt: {e}")
+
+
 def build():
     print("=" * 60)
     print(" Building Vesper Standalone Executable (.exe)")
     print("=" * 60)
+
+    sep = ";" if sys.platform == "win32" else ":"
 
     cmd = [
         sys.executable, "-m", "PyInstaller",
@@ -72,19 +95,23 @@ def build():
         "--collect-submodules=pynput",
         "--collect-submodules=pyperclip",
         "--collect-submodules=keyboard",
-        "--add-data=config.json;.",
-        "main.py"
+        f"--add-data=config.json{sep}.",
+        "main.py",
     ]
 
-    print(f"Running PyInstaller for Vesper...")
+    print("Running PyInstaller for Vesper...")
     subprocess.check_call(cmd)
 
-    dist_exe = Path("dist/Vesper.exe").resolve()
+    exe_name = "Vesper.exe" if sys.platform == "win32" else "Vesper"
+    dist_exe = Path("dist") / exe_name
     if dist_exe.exists():
-        print(f"\n[SUCCESS] Standalone Vesper.exe compiled successfully at:\n  {dist_exe}")
-        create_desktop_shortcut(dist_exe)
+        resolved = dist_exe.resolve()
+        print(f"\n[SUCCESS] Standalone executable compiled successfully at:\n  {resolved}")
+        update_checksum(resolved)
+        create_desktop_shortcut(resolved)
     else:
-        print("[ERROR] Build failed: Executable not found in dist/")
+        print(f"[ERROR] Build failed: Executable not found at {dist_exe}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -131,6 +131,11 @@ QPushButton#copyBtn:hover {
     color: #FFFFFF;
     border: 1px solid #8B5CF6;
 }
+QPushButton#copyBtn[copied="true"] {
+    background-color: #10B981;
+    color: #FFFFFF;
+    border: 1px solid #059669;
+}
 QPushButton#deleteCardBtn {
     background-color: transparent;
     color: #64748B;
@@ -277,9 +282,10 @@ class HistoryCard(QFrame):
         actions_col = QHBoxLayout()
         actions_col.setSpacing(6)
 
+        # Copy Action Button
         self.copy_btn = QPushButton("Copy")
         self.copy_btn.setObjectName("copyBtn")
-        self.copy_btn.setFixedWidth(68)
+        self.copy_btn.setFixedWidth(78)
         self.copy_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.copy_btn.clicked.connect(self._copy_text)
         actions_col.addWidget(self.copy_btn, alignment=Qt.AlignmentFlag.AlignTop)
@@ -301,12 +307,18 @@ class HistoryCard(QFrame):
         except Exception as e:
             logger.debug(f"Copy to clipboard failed: {e}")
         self.copy_btn.setText("✓ Copied")
-        self.copy_btn.setStyleSheet("background-color: #10B981; color: white; border: 1px solid #10B981;")
+        self.copy_btn.setProperty("copied", "true")
+        self.copy_btn.style().unpolish(self.copy_btn)
+        self.copy_btn.style().polish(self.copy_btn)
+        self.copy_btn.update()
         QTimer.singleShot(1400, self._reset_copy_btn)
 
     def _reset_copy_btn(self):
         self.copy_btn.setText("Copy")
-        self.copy_btn.setStyleSheet("")
+        self.copy_btn.setProperty("copied", "false")
+        self.copy_btn.style().unpolish(self.copy_btn)
+        self.copy_btn.style().polish(self.copy_btn)
+        self.copy_btn.update()
 
 
 class HistoryDialog(QDialog):
