@@ -3,12 +3,14 @@ name: CI
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  test:
-    name: Test Suite (Windows)
+  test-and-build:
+    name: Test Suite & Build Vesper.exe (Windows)
     runs-on: windows-latest
 
     steps:
@@ -26,8 +28,22 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Unit Tests
+      - name: Run Unit & Audio Tests
         run: |
           python tests/test_hotkey.py
           python tests/test_cleanup.py
           python tests/test_injector.py
+          python tests/test_audio.py
+
+      - name: Build Standalone Vesper.exe
+        run: |
+          python build_exe.py
+
+      - name: Upload Vesper.exe Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vesper-Windows-x64
+          path: |
+            dist/Vesper.exe
+            checksums.txt
+          if-no-files-found: error

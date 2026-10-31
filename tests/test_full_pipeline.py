@@ -48,6 +48,7 @@ def test_settings_dialog_and_Deadlock_prevention():
             assert saved_configs[-1]["language"] == "hi" and saved_configs[-1]["task"] == "transcribe"
 
             dlg._stop_mic_monitor()
+            dlg.deleteLater()
     print("[PASS] SettingsDialog dictation mode persistence and mic monitor cleanup verified.")
 
 
@@ -114,6 +115,8 @@ def test_full_pipeline():
 
     # Clean shutdown
     wispr.hotkey_listener.stop()
+    wispr.tray.hide()
+    wispr.overlay.close()
     print("\nALL FULL PIPELINE TESTS PASSED!")
 
 
